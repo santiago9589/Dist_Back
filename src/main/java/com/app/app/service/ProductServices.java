@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -28,15 +29,19 @@ public class ProductServices {
                 
                 .map(product -> {
                     try {
+                        String relativePath = "static/"+product.getImage();
 
-                        String imageName = product.getImage();
-                        Resource imageResource = new ClassPathResource("static/"+ imageName);
+                        Resource resource = new ClassPathResource(relativePath);
+                        InputStream inputStream = resource.getInputStream();
+                        byte[] content = inputStream.readAllBytes();
+
+                        //Resource imageResource = new ClassPathResource("static/"+ imageName);
 
                         return new ProductoResponse(
                                 product.getIdProduct(),
                                 product.getNombre(),
                                 product.getDescripcion(),
-                                Files.readAllBytes(imageResource.getFile().toPath()),
+                                content,
                                 product.getCategoria()
                         );
                     } catch (IOException e) {
